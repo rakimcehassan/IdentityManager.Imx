@@ -2,7 +2,7 @@
 
 # Identity Manager HTML5 applications
 
-## Change log
+## Change log ok
 
 ### August 12, 2024
 - 459770: Fixed an issue where the request parameter validation result was not working on first input.
