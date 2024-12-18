@@ -4,6 +4,12 @@
 
 ## Change log
 
+### December 11, 2024
+- 430843: Fixes an inconsistency in the Attestation History when an approver is defined in multiple sublevels.
+- 467451: Fixes some issues with the „Show attestation cases to be approved by chief approval team“ toggle on the Pending Attestation page.
+- 472174: Fixes an issue with the data export in data tables, when using additional columns in the configuration.
+- 470782: Fixes the information, provided for attestors and receivers.
+
 ### November 19, 2024
 - 468962: Method confirmGeneral returns a valid value on OkResult.
 - 465213: Fixes an infinite loop if the an invalid value is set on a basic CDR.
