@@ -4,6 +4,35 @@
 
 ## Change log
 
+### December 11, 2024
+- 430843: Fixes an inconsistency in the Attestation History when an approver is defined in multiple sublevels.
+- 467451: Fixes some issues with the „Show attestation cases to be approved by chief approval team“ toggle on the Pending Attestation page.
+- 472174: Fixes an issue with the data export in data tables, when using additional columns in the configuration.
+- 470782: Fixes the information, provided for attestors and receivers.
+
+### November 19, 2024
+- 468962: Method confirmGeneral returns a valid value on OkResult.
+- 465213: Fixes an infinite loop if the an invalid value is set on a basic CDR.
+- 460757: Approval parameters are read/written interactively.
+  **Important**: This fix requires the server-side fix 460757 to be installed.
+- 468375: Fixes an issue, with the date parsing for data dependencies scripts on the request form.
+- 466517: Fixes cut text on the request history page.
+- 459617: Fixes an issue with new-line stings on CDR.
+- 467387: Adds security fixes for Angular 14.
+- 468551: Fixes an issue with changing request parameter for some product bundles.
+- 469356: Adds the delegation of an approval to the Pending Attestation pages Chief Approval Team view.
+- 469345: Fixes an issue with the orange triangle on the right of the "Settings" gear for to many search results on the request history.
+- 467221: Fixes the header markup on several pages.
+- 466404: Fixes an issue with using 'today' as the start date, when delegation responsibilities.
+- 469865: Fixes an issue with UI text on the System roles page, when adding columns to a table.
+ 
+
+### October 8, 2024
+- 465213: Fixes an infinite loop if the an invalid value is set on a basic CDR.
+- 466404: Fixes an issue with setting today's date as the start date of a delegation.
+- 464909: Fixes an issue with the removal of IT shop assignments from newly created applications.
+- 466217: Fixes timing issues that could cause the search result to become out of sync with the search term entered by the user.
+
 ### September 9, 2024
 - 463113: Fixes an issue, regarding the "Unsubscribed as from" property, that doesn't work as expected.
 - 462249: Fixes the "Property not found: UID_UNSRoot" error, when switching to tab "Child System Entitlements" on the Data Explorer's system Entitlements page.

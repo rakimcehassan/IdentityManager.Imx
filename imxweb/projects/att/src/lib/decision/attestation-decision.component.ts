@@ -70,7 +70,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   public selectedCases: AttestationCase[] = [];
   public userUid: string;
 
-  public hideToolbar:boolean = false;
+  public hideToolbar: boolean = false;
 
   public recApprove = RecommendationEnum.Approve;
   public recDeny = RecommendationEnum.Deny;
@@ -177,7 +177,9 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     this.initDataModel();
   }
 
-  public switchEscalation(): Promise<void> {
+  public async switchEscalation(): Promise<void> {
+    this.attestationCases.isChiefApproval = !this.attestationCases.isChiefApproval;
+    await this.initDataModel();
     return this.getData();
   }
 
@@ -287,6 +289,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   }
 
   public async search(search: string): Promise<void> {
+    this.attestationCases.abortCall();
     return this.getData({ ...this.navigationState, ...{ search } });
   }
 
@@ -298,42 +301,44 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const params: AttestationDecisionLoadParameters = {
-        Escalation: this.attestationCases.isChiefApproval,
+      this.navigationState = {
         ...this.navigationState,
+        Escalation: this.attestationCases.isChiefApproval,
       };
-      const dataSource = await this.attestationCases.get(params,this.isUserEscalationApprover);
-      const exportMethod = this.attestationCases.exportData(params);
-      this.dstSettings = {
-        dataSource,
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        filters: this.filterOptions,
-        dataModel: this.dataModel,
-        groupData: this.groupData,
-        displayedColumns: [
-          this.entitySchema.Columns.UiText,
-          {
-            ColumnName: 'badges',
-            Type: ValType.String,
-            untranslatedDisplay: '#LDS#Badges',
-          },
-          {
-            ColumnName: 'decision',
-            Type: ValType.String,
-            afterAdditionals: true,
-            untranslatedDisplay: '#LDS#Decision',
-          },
-          {
-            ColumnName: 'recommendations',
-            Type: ValType.String,
-            afterAdditionals: true,
-            untranslatedDisplay: '#LDS#Recommendation',
-          },
-        ],
-        exportMethod,
-        viewConfig: this.viewConfig,
-      };
+      const dataSource = await this.attestationCases.get(this.navigationState, this.isUserEscalationApprover);
+      if (dataSource) {
+        const exportMethod = this.attestationCases.exportData(this.navigationState);
+        this.dstSettings = {
+          dataSource,
+          entitySchema: this.entitySchema,
+          navigationState: this.navigationState,
+          filters: this.filterOptions,
+          dataModel: this.dataModel,
+          groupData: this.groupData,
+          displayedColumns: [
+            this.entitySchema.Columns.UiText,
+            {
+              ColumnName: 'badges',
+              Type: ValType.String,
+              untranslatedDisplay: '#LDS#Badges',
+            },
+            {
+              ColumnName: 'decision',
+              Type: ValType.String,
+              afterAdditionals: true,
+              untranslatedDisplay: '#LDS#Decision',
+            },
+            {
+              ColumnName: 'recommendations',
+              Type: ValType.String,
+              afterAdditionals: true,
+              untranslatedDisplay: '#LDS#Recommendation',
+            },
+          ],
+          exportMethod,
+          viewConfig: this.viewConfig,
+        };
+      }
     } finally {
       isBusy.endBusy();
     }
@@ -345,7 +350,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     try {
       const groupedData = this.groupedData[groupKey];
       const navigationState = { ...groupedData.navigationState, Escalation: this.viewEscalation };
-      groupedData.data = await this.attestationCases.get(navigationState,this.isUserEscalationApprover);
+      groupedData.data = await this.attestationCases.get(navigationState, this.isUserEscalationApprover);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,
@@ -371,18 +376,21 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
     try {
       attestationCaseWithPolicy = (
-        await this.attestationCases.get({
-          Escalation: this.viewEscalation,
-          uidpolicy: attestationCase.UID_AttestationPolicy.value,
-          filter: [
-            {
-              ColumnName: 'UID_AttestationCase',
-              Type: FilterType.Compare,
-              CompareOp: CompareOperator.Equal,
-              Value1: attestationCase.GetEntity().GetKeys()[0],
-            },
-          ],
-        },this.isUserEscalationApprover)
+        await this.attestationCases.get(
+          {
+            Escalation: this.isUserEscalationApprover,
+            uidpolicy: attestationCase.UID_AttestationPolicy.value,
+            filter: [
+              {
+                ColumnName: 'UID_AttestationCase',
+                Type: FilterType.Compare,
+                CompareOp: CompareOperator.Equal,
+                Value1: attestationCase.GetEntity().GetKeys()[0],
+              },
+            ],
+          },
+          this.isUserEscalationApprover
+        )
       ).Data[0];
       // Add additional violation data to this case
       attestationCaseWithPolicy.data.CanSeeComplianceViolations = attestationCase.data.CanSeeComplianceViolations;

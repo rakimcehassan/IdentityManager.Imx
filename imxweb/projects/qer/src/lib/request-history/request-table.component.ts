@@ -264,6 +264,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public onSearch(keywords: string): Promise<void> {
+    this.requestHistoryService.abortCall();
     const navigationState = {
       ...this.navigationState,
       ...{
@@ -323,7 +324,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
       if (data) {
         const dstSettings: DataSourceToolbarSettings = {
           dataSource: {
-            totalCount: data.totalCount,
+            ...data,
             Data: data.Data ? this.sortChildrenAfterParents(data.Data) : undefined,
           },
           filters: this.filterOptions,
@@ -340,8 +341,6 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
         } else {
           this.dstSettings = dstSettings;
         }
-      } else {
-        this.dstSettings = undefined;
       }
     } finally {
       busy.endBusy();

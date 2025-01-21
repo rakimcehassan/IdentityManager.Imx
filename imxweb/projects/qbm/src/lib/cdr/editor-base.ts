@@ -213,14 +213,14 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     } catch (e) {
       this.lastError = e;
       this.logger.error(this, e);
-      this.control.updateValueAndValidity({ emitEvent: true });
     } finally {
       this.isBusy = false;
       this.isWriting = false;
-      if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
+      if (!this.lastError && this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
         this.logger.debug(this, 'form control value is set to', this.control.value);
       }
+      this.control.updateValueAndValidity({ emitEvent: false });
     }
 
     this.valueHasChanged.emit({ value, forceEmit: true });
